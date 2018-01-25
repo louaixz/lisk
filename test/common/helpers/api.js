@@ -161,20 +161,22 @@ function normalizeTransactionObject (transaction) {
 	return transaction;
 }
 
+var postTransactionsEndpoint = new swaggerSpec('POST /transactions');
+
 function sendTransactionPromise (transaction, expectedStatusCode) {
 	expectedStatusCode = expectedStatusCode || 200;
 
 	transaction = normalizeTransactionObject(transaction);
 
-	return new swaggerSpec('POST /transactions').makeRequest({transactions: [transaction]}, expectedStatusCode);
+	return postTransactionsEndpoint.makeRequest({transactions: [transaction]}, expectedStatusCode);
 }
 
 function sendTransactionsPromise (transactions, expectedStatusCode) {
 	expectedStatusCode = expectedStatusCode || 200;
 
-	transactions = _.map(transactions, normalizeTransactionObject);
-
-	return new swaggerSpec('POST /transactions').makeRequest({transactions: transactions}, expectedStatusCode);
+	return Promise.map(transactions, function (transaction) {
+		return sendTransactionPromise(transaction, expectedStatusCode);
+	});
 }
 
 function sendSignature (signature, transaction, cb) {
@@ -266,8 +268,8 @@ function getBlocks (params, cb) {
  * @param {string} param - Param name to check
  */
 function expectSwaggerParamError (res, param) {
-	res.body.message.should.be.eql('Validation errors');
-	res.body.errors.map(function (p) { return p.name; }).should.contain(param);
+	expect(res.body.message).to.be.eql('Validation errors');
+	expect(res.body.errors.map(function (p) { return p.name; })).to.contain(param);
 }
 
 /**

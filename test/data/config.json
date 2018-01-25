@@ -14,6 +14,7 @@
     "db": {
         "host": "localhost",
         "port": 5432,
+        "schema": "public",
         "database": "lisk_test",
         "user": "",
         "password": "password",
@@ -22,6 +23,11 @@
         "poolIdleTimeout": 30000,
         "reapIntervalMillis": 1000,
         "logEvents": [
+            "connect",
+            "disconnect",
+            "query",
+            "task",
+            "transact",
             "error"
         ],
         "logFileName": "logs/lisk_db.log"

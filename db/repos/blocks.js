@@ -151,12 +151,11 @@ class BlocksRepository {
 	 * @param {string} params.id
 	 * @param {string} params.previousBlock
 	 * @param {int} params.height
-	 * @return {Promise}
+	 * @return {Promise<number>}
 	 */
 	getCommonBlock (params) {
-		// TODO: Must use a result-specific method, not .query
 		params.comparePreviousBlock = params.previousBlock ? this.pgp.as.format('AND "previousBlock" = ${previousBlock}', params): '';
-		return this.db.query(sql.getCommonBlock, params);
+		return this.db.one(sql.getCommonBlock, params, a => +a.count);
 	}
 
 	// TODO: Merge BlocksRepository#getHeightByLastId with BlocksRepository#list
